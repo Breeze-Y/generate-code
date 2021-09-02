@@ -10,7 +10,8 @@ public enum ErrorEnum {
     /**
      * 参数校验
      */
-    PARAMETER_CHECK("10000", "Parameter verification failed: {0}");
+    PARAMETER_CHECK("10000", "Parameter verification failed: {0}"),
+    GENERATE_ERROR("10001", "Generate failed: {0}");
 
     private final String code;
 
