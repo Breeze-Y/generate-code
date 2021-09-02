@@ -4,10 +4,12 @@ import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Parameter;
-import top.breezes.config.handler.GenerateCodeAble;
+import top.breezes.commonable.handler.GenerateCodeAble;
 import top.breezes.config.output.OutputConfigurer;
 import top.breezes.config.scanner.ScannerConfigurer;
 import top.breezes.config.template.TemplateConfigurer;
+import top.breezes.enums.ErrorEnum.ErrorEnum;
+import top.breezes.exception.GenerateCodeException;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -42,8 +44,31 @@ public abstract class AbstractMainMojo extends AbstractMojo implements GenerateC
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
-        init();
         printlnLog();
+        commonCheck();
+        init();
+        generate();
+    }
+
+    /**
+     * 参数校验
+     */
+    private void commonCheck() {
+        if (null == scanner) {
+            throw new GenerateCodeException(ErrorEnum.PARAMETER_CHECK
+                    , "Scanner cannot be null.");
+        }
+        scanner.check();
+        if (null == template) {
+            throw new GenerateCodeException(ErrorEnum.PARAMETER_CHECK
+                    , "Template cannot be null.");
+        }
+        template.check();
+        if (null == output) {
+            throw new GenerateCodeException(ErrorEnum.PARAMETER_CHECK
+                    , "Output cannot be null.");
+        }
+        output.check();
     }
 
     /**

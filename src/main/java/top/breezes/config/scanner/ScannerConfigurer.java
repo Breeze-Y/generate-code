@@ -2,7 +2,10 @@ package top.breezes.config.scanner;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import top.breezes.config.log.PrintlnLoggerAble;
+import top.breezes.commonable.check.CheckAble;
+import top.breezes.commonable.log.PrintlnLoggerAble;
+import top.breezes.enums.ErrorEnum.ErrorEnum;
+import top.breezes.exception.GenerateCodeException;
 
 import java.util.List;
 
@@ -11,7 +14,7 @@ import java.util.List;
  * @date 2021/9/1 20:52
  * @description Bean扫描器封装
  */
-public class ScannerConfigurer implements PrintlnLoggerAble {
+public class ScannerConfigurer implements PrintlnLoggerAble, CheckAble {
 
     /**
      * 基础包路径，用于包扫描
@@ -28,6 +31,17 @@ public class ScannerConfigurer implements PrintlnLoggerAble {
      * </p>
      */
     private List<String> beans;
+
+    /**
+     * 校验
+     */
+    @Override
+    public void check() {
+        if (StringUtils.isBlank(basePackage) && CollectionUtils.isEmpty(beans)) {
+            throw new GenerateCodeException(
+                    ErrorEnum.PARAMETER_CHECK, "Scanner basePackage and beans cannot be all blank.");
+        }
+    }
 
     /**
      * 日志输出

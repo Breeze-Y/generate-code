@@ -15,6 +15,15 @@ public class NormalTemplate {
      */
     private ServiceTemplate service;
 
+
+    public boolean isDaoEnabled() {
+        return dao != null && dao.getGenerate();
+    }
+
+    public boolean isServiceEnabled() {
+        return service != null && service.getGenerate();
+    }
+
     public ServiceTemplate getService() {
         return service;
     }

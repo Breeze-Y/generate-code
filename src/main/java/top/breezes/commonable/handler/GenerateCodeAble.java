@@ -1,4 +1,4 @@
-package top.breezes.config.handler;
+package top.breezes.commonable.handler;
 
 /**
  * @author yuchengxin <breezes_y@163.com>

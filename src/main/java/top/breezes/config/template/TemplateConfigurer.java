@@ -1,10 +1,13 @@
 package top.breezes.config.template;
 
-import top.breezes.config.log.PrintlnLoggerAble;
+import top.breezes.commonable.check.CheckAble;
+import top.breezes.commonable.log.PrintlnLoggerAble;
 import top.breezes.config.template.global.GlobalTemplate;
 import top.breezes.config.template.normal.DaoTemplate;
 import top.breezes.config.template.normal.NormalTemplate;
 import top.breezes.config.template.normal.ServiceTemplate;
+import top.breezes.enums.ErrorEnum.ErrorEnum;
+import top.breezes.exception.GenerateCodeException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,7 +17,7 @@ import java.util.Map;
  * @date 2021/9/1 20:59
  * @description 模板配置封装类
  */
-public class TemplateConfigurer implements PrintlnLoggerAble {
+public class TemplateConfigurer implements PrintlnLoggerAble, CheckAble {
 
     /**
      * 全局配置
@@ -51,6 +54,7 @@ public class TemplateConfigurer implements PrintlnLoggerAble {
                 LOGGER.info("[Template] dao packages: " + daoTemplate.getPackages());
             }
             LOGGER.info("");
+
             ServiceTemplate service = this.normal.getService();
             if (null != service) {
                 LOGGER.info("[Template] service generate: " + service.getGenerate());
@@ -60,6 +64,20 @@ public class TemplateConfigurer implements PrintlnLoggerAble {
         }
 
         LOGGER.info("");
+    }
+
+    /**
+     * 校验
+     */
+    @Override
+    public void check() {
+        if (null == normal) {
+            throw new GenerateCodeException(ErrorEnum.PARAMETER_CHECK, "Template normal is null.");
+        }
+        if (!normal.isDaoEnabled() && !normal.isServiceEnabled()) {
+            throw new GenerateCodeException(
+                    ErrorEnum.PARAMETER_CHECK, "Template normal dao and service cannot be all invalid.");
+        }
     }
 
     public GlobalTemplate getGlobal() {

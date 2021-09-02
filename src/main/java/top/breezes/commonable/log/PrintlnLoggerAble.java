@@ -1,4 +1,4 @@
-package top.breezes.config.log;
+package top.breezes.commonable.log;
 
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugin.logging.SystemStreamLog;
