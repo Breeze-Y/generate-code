@@ -44,9 +44,13 @@ public abstract class AbstractMainMojo extends AbstractMojo implements GenerateC
      */
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        // 日志快照输出
         printlnLog();
+        // 基础参数校验
         commonCheck();
+        // 初始化操作
         init();
+        // 构建逻辑
         generate();
     }
 
