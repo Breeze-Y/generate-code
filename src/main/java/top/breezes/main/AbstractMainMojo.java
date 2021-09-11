@@ -13,8 +13,7 @@ import top.breezes.exception.GenerateCodeException;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
+import java.util.*;
 
 /**
  * @author yuchengxin <breezes_y@163.com>
@@ -85,7 +84,7 @@ public abstract class AbstractMainMojo extends AbstractMojo implements GenerateC
                 return;
             }
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-            docMap.put("@date", formatter.format(new Date()));
+            docMap.put("date", formatter.format(new Date()));
         }
     }
 
@@ -102,6 +101,19 @@ public abstract class AbstractMainMojo extends AbstractMojo implements GenerateC
         if (null != output) {
             output.println();
         }
+    }
+
+    /**
+     * 从输入的docMap中构建doc list
+     *
+     * @return
+     */
+    public final List<String> buildDocListByMap() {
+        List<String> docList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : template.getGlobal().getDoc().entrySet()) {
+            docList.add("@" + entry.getKey() + " " + entry.getValue());
+        }
+        return docList;
     }
 
 
