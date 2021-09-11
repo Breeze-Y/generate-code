@@ -2,8 +2,8 @@ package top.breezes.model;
 
 import com.google.common.base.CaseFormat;
 import com.thoughtworks.qdox.model.JavaField;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,30 +23,19 @@ public class Field {
 
     private String jdbcType;
 
-    public static Field create(JavaField field) {
+    private String length;
+
+    private String comment;
+
+    public static Field create(JavaField field, Map<String, String> typeMap, Map<String, String> lengthMap) {
         Field newField = new Field();
         newField.setId("id".equals(field.getName()) || "uuid".equals(field.getName()));
         newField.setName(field.getName());
         newField.setColumn(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()));
-        newField.setJdbcType(javaType2JdbcMap.getOrDefault(field.getType().getName(), javaType2JdbcMap.get("String")));
+        newField.setJdbcType(typeMap.getOrDefault(field.getType().getName(), typeMap.get("String")));
+        newField.setLength(lengthMap.getOrDefault(field.getType().getName(), typeMap.get("String")));
+        newField.setComment(StringUtils.isBlank(field.getComment()) ? StringUtils.EMPTY : field.getComment().replaceAll("\r\n|\r|\n", " "));
         return newField;
-    }
-
-    static Map<String, String> javaType2JdbcMap = new HashMap<>();
-
-    static {
-        javaType2JdbcMap.put("int", "INTEGER");
-        javaType2JdbcMap.put("long", "BIGINT");
-        javaType2JdbcMap.put("double", "DECIMAL");
-        javaType2JdbcMap.put("float", "DECIMAL");
-        javaType2JdbcMap.put("boolean", "TINYINT");
-        javaType2JdbcMap.put("Integer", "INTEGER");
-        javaType2JdbcMap.put("Long", "BIGINT");
-        javaType2JdbcMap.put("Double", "DECIMAL");
-        javaType2JdbcMap.put("Float", "DECIMAL");
-        javaType2JdbcMap.put("Boolean", "TINYINT");
-        javaType2JdbcMap.put("String", "VARCHAR");
-        javaType2JdbcMap.put("BigDecimal", "DECIMAL");
     }
 
     public String getType() {
@@ -87,5 +76,21 @@ public class Field {
 
     public void setId(Boolean id) {
         this.id = id;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

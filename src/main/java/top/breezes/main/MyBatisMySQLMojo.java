@@ -5,6 +5,7 @@ import freemarker.template.Template;
 import org.apache.maven.plugins.annotations.Mojo;
 import top.breezes.model.MapperFile;
 import top.breezes.model.MysqlMapperXmlFile;
+import top.breezes.model.MysqlScriptFile;
 import top.breezes.utils.FreemarkerUtils;
 import top.breezes.utils.ParseUtil;
 
@@ -38,28 +39,43 @@ public class MyBatisMySQLMojo extends AbstractMainMojo {
         /*generate mappe file*/
         if (template.getNormal().getDao().getGenerate()) {
             List<MapperFile> mapperFiles = buildMapperTemplateParams(classes);
-            Template mapper = null;
+            Template mapper = FreemarkerUtils.getTemplate("mapper.ftl");
             for (MapperFile mapperFile : mapperFiles) {
                 try {
-                    mapper = FreemarkerUtils.getTemplate("mapper.ftl");
-                    FreemarkerUtils.run(mapper, mapperFile.getFilePtah(), mapperFile);
+                    FreemarkerUtils.run(mapper, mapperFile.getFilePath(), mapperFile);
                 } catch (IOException e) {
                     getLog().error("Generate file " + mapperFile.getClassName() + " error.");
                 }
             }
 
             List<MysqlMapperXmlFile> xmlFiles = buildMapperXmlParams(classes);
-            Template mysql = null;
+            Template mysql = FreemarkerUtils.getTemplate("mysql_mapper_xml.ftl");
+            ;
             for (MysqlMapperXmlFile xmlFile : xmlFiles) {
                 try {
-                    mysql = FreemarkerUtils.getTemplate("mysql_mapper_xml.ftl");
-                    FreemarkerUtils.run(mysql, xmlFile.getFilePtah(), xmlFile);
+                    FreemarkerUtils.run(mysql, xmlFile.getFilePath(), xmlFile);
                 } catch (IOException e) {
                     getLog().error("Generate file " + xmlFile.getFileName() + " error.");
                 }
             }
+
+            Template mysqlScript = FreemarkerUtils.getTemplate("mysql_sql_script.ftl");
+            List<MysqlScriptFile> scriptFiles = buildSqlScriptParams(classes);
+            for (MysqlScriptFile scriptFile : scriptFiles) {
+                try {
+                    FreemarkerUtils.run(mysqlScript, scriptFile.getFilePath(), scriptFile);
+                } catch (IOException e) {
+                    getLog().error("Generate file " + scriptFile.getFileName() + " error.");
+                }
+            }
         }
 
+    }
+
+    private List<MysqlScriptFile> buildSqlScriptParams(List<JavaClass> classes) {
+        return classes.parallelStream()
+                .map(javaClass -> new MysqlScriptFile(javaClass, output.getBaseDir()))
+                .collect(Collectors.toList());
     }
 
     private List<MysqlMapperXmlFile> buildMapperXmlParams(List<JavaClass> classes) {

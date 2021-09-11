@@ -4,7 +4,9 @@ import com.thoughtworks.qdox.model.JavaClass;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -28,7 +30,7 @@ public class MysqlMapperXmlFile {
 
     private String classFullyQualifiedName;
 
-    private String filePtah;
+    private String filePath;
 
     private List<Field> fieldList;
 
@@ -40,7 +42,7 @@ public class MysqlMapperXmlFile {
         this.setClassFullyQualifiedName(javaClass.getGenericFullyQualifiedName());
         this.setPackageName(packages);
         String packagePath = StringUtils.join(packages.split("\\."), File.separator);
-        this.setFilePtah(outDir + File.separator + packagePath + File.separator + "mysql" +
+        this.setFilePath(outDir + File.separator + packagePath + File.separator + "mysql" +
                 File.separator + this.fileName);
         this.fieldList = buildFieldList(javaClass);
     }
@@ -49,10 +51,42 @@ public class MysqlMapperXmlFile {
         return javaClass.getFields()
                 .parallelStream()
                 .filter(field -> !"serialVersionUID".equals(field.getName()))
-                .map(Field::create)
+                .map(field -> Field.create(field, javaType2JdbcMap, jdbcLengthMap))
                 .collect(Collectors.toList());
     }
 
+    public static Map<String, String> javaType2JdbcMap = new HashMap<>();
+    public static Map<String, String> jdbcLengthMap = new HashMap<>();
+
+    static {
+        javaType2JdbcMap.put("int", "INTEGER");
+        javaType2JdbcMap.put("long", "BIGINT");
+        javaType2JdbcMap.put("double", "DECIMAL");
+        javaType2JdbcMap.put("float", "DECIMAL");
+        javaType2JdbcMap.put("boolean", "TINYINT");
+        javaType2JdbcMap.put("Integer", "INTEGER");
+        javaType2JdbcMap.put("Long", "BIGINT");
+        javaType2JdbcMap.put("Double", "DECIMAL");
+        javaType2JdbcMap.put("Float", "DECIMAL");
+        javaType2JdbcMap.put("Boolean", "TINYINT");
+        javaType2JdbcMap.put("String", "VARCHAR");
+        javaType2JdbcMap.put("BigDecimal", "DECIMAL");
+        javaType2JdbcMap.put("Date", "TIMESTAMP");
+
+        jdbcLengthMap.put("int", "bigint(20)");
+        jdbcLengthMap.put("long", "bigint(20)");
+        jdbcLengthMap.put("double", "decimal(18,2)");
+        jdbcLengthMap.put("float", "decimal(18,2)");
+        jdbcLengthMap.put("boolean", "tinyint(1)");
+        jdbcLengthMap.put("Integer", "bigint(20)");
+        jdbcLengthMap.put("Long", "bigint(20)");
+        jdbcLengthMap.put("Double", "decimal(18,2)");
+        jdbcLengthMap.put("Float", "decimal(18,2)");
+        jdbcLengthMap.put("Boolean", "tinyint(1)");
+        jdbcLengthMap.put("String", "varchar(255)");
+        jdbcLengthMap.put("BigDecimal", "varchar(50)");
+        jdbcLengthMap.put("Date", "datetime");
+    }
 
     public String getPackageName() {
         return packageName;
@@ -78,12 +112,12 @@ public class MysqlMapperXmlFile {
         this.className = className;
     }
 
-    public String getFilePtah() {
-        return filePtah;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFilePtah(String filePtah) {
-        this.filePtah = filePtah;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public String getMapperName() {

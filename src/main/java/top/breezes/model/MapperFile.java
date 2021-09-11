@@ -23,7 +23,7 @@ public class MapperFile {
 
     private List<String> docList;
 
-    private String filePtah;
+    private String filePath;
 
     public MapperFile(
             String packages, List<String> docList, JavaClass javaClass, String outDir) {
@@ -32,7 +32,7 @@ public class MapperFile {
         this.setPackageName(packages);
         this.setDocList(docList);
         String packagePath = StringUtils.join(packages.split("\\."), File.separator);
-        this.setFilePtah(outDir + File.separator + packagePath + File.separator + this.fileName);
+        this.setFilePath(outDir + File.separator + packagePath + File.separator + this.fileName);
     }
 
 
@@ -68,11 +68,11 @@ public class MapperFile {
         this.docList = docList;
     }
 
-    public String getFilePtah() {
-        return filePtah;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setFilePtah(String filePtah) {
-        this.filePtah = filePtah;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 }
