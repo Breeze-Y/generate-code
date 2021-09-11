@@ -22,11 +22,11 @@ import java.util.stream.Collectors;
  */
 public class ParseUtil {
 
-    private ScannerConfigurer scanner;
+    private final ScannerConfigurer scanner;
 
-    private File sourceDir;
+    private final File sourceDir;
 
-    private JavaProjectBuilder builder;
+    private final JavaProjectBuilder builder;
 
     private static final Log LOGGER = new SystemStreamLog();
 
