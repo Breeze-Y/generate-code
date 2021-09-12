@@ -4,8 +4,8 @@ import com.thoughtworks.qdox.model.JavaClass;
 import freemarker.template.Template;
 import org.apache.maven.plugins.annotations.Mojo;
 import top.breezes.model.MapperFile;
-import top.breezes.model.mysql.MysqlMapperXmlFile;
-import top.breezes.model.mysql.MysqlScriptFile;
+import top.breezes.model.pgsql.PgsqlMapperXmlFile;
+import top.breezes.model.pgsql.PgsqlScriptFile;
 import top.breezes.utils.FreemarkerUtils;
 import top.breezes.utils.ParseUtil;
 
@@ -20,15 +20,15 @@ import java.util.stream.Collectors;
  * @date 2021/9/1 21:15
  * @description mybatis+mysql的模板生成器
  */
-@Mojo(name = "mybatis-mysql")
-public class MyBatisMySQLMojo extends AbstractMainMojo {
+@Mojo(name = "mybatis-postgresql")
+public class MyBatisPgSQLMojo extends AbstractMainMojo {
 
     /**
      * 代码生成逻辑
      */
     @Override
     public void generate() {
-        getLog().info("---------------------< Generate [ mybatis mysql ] >---------------------");
+        getLog().info("-------------------< Generate [ mybatis PostgreSQL ] >------------------");
 
         ParseUtil parseUtil = new ParseUtil(scanner, sourceDir);
         List<JavaClass> classes = parseUtil.getClasses();
@@ -49,10 +49,10 @@ public class MyBatisMySQLMojo extends AbstractMainMojo {
                 }
             }
 
-            List<MysqlMapperXmlFile> xmlFiles = buildMapperXmlParams(classes);
-            Template mysql = FreemarkerUtils.getTemplate("mysql_mapper_xml.ftl");
+            List<PgsqlMapperXmlFile> xmlFiles = buildMapperXmlParams(classes);
+            Template mysql = FreemarkerUtils.getTemplate("pgsql_mapper_xml.ftl");
 
-            for (MysqlMapperXmlFile xmlFile : xmlFiles) {
+            for (PgsqlMapperXmlFile xmlFile : xmlFiles) {
                 try {
                     FreemarkerUtils.run(mysql, xmlFile.getFilePath(), xmlFile);
                 } catch (IOException e) {
@@ -60,9 +60,9 @@ public class MyBatisMySQLMojo extends AbstractMainMojo {
                 }
             }
 
-            Template mysqlScript = FreemarkerUtils.getTemplate("mysql_sql_script.ftl");
-            List<MysqlScriptFile> scriptFiles = buildSqlScriptParams(classes);
-            for (MysqlScriptFile scriptFile : scriptFiles) {
+            Template mysqlScript = FreemarkerUtils.getTemplate("pgsql_sql_script.ftl");
+            List<PgsqlScriptFile> scriptFiles = buildSqlScriptParams(classes);
+            for (PgsqlScriptFile scriptFile : scriptFiles) {
                 try {
                     FreemarkerUtils.run(mysqlScript, scriptFile.getFilePath(), scriptFile);
                 } catch (IOException e) {
@@ -73,18 +73,18 @@ public class MyBatisMySQLMojo extends AbstractMainMojo {
 
     }
 
-    private List<MysqlScriptFile> buildSqlScriptParams(List<JavaClass> classes) {
+    private List<PgsqlScriptFile> buildSqlScriptParams(List<JavaClass> classes) {
         return classes.parallelStream()
-                .map(javaClass -> new MysqlScriptFile(javaClass, output.getBaseDir()
-                        + File.separator + "mysql"))
+                .map(javaClass -> new PgsqlScriptFile(javaClass, output.getBaseDir()
+                        + File.separator + "pgsql"))
                 .collect(Collectors.toList());
     }
 
-    private List<MysqlMapperXmlFile> buildMapperXmlParams(List<JavaClass> classes) {
+    private List<PgsqlMapperXmlFile> buildMapperXmlParams(List<JavaClass> classes) {
         String packages = template.getNormal().getDao().getPackages();
         return classes.parallelStream()
-                .map(javaClass -> new MysqlMapperXmlFile(packages, javaClass, output.getBaseDir()
-                        + File.separator + "mysql"))
+                .map(javaClass -> new PgsqlMapperXmlFile(packages, javaClass, output.getBaseDir()
+                        + File.separator + "pgsql"))
                 .collect(Collectors.toList());
     }
 
@@ -92,8 +92,8 @@ public class MyBatisMySQLMojo extends AbstractMainMojo {
         String packages = template.getNormal().getDao().getPackages();
         List<String> docList = buildDocListByMap();
         return classList.parallelStream()
-                .map(entity -> new MapperFile(packages, docList, entity, output.getBaseDir()
-                        + File.separator + "mysql"))
+                .map(entity -> new MapperFile(packages, docList, entity,
+                        output.getBaseDir() + File.separator + "pgsql"))
                 .collect(Collectors.toList());
     }
 

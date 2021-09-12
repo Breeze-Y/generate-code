@@ -1,7 +1,8 @@
-package top.breezes.model;
+package top.breezes.model.mysql;
 
 import com.thoughtworks.qdox.model.JavaClass;
 import org.apache.commons.lang3.StringUtils;
+import top.breezes.model.Field;
 
 import java.io.File;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class MysqlMapperXmlFile {
         this.setClassFullyQualifiedName(javaClass.getGenericFullyQualifiedName());
         this.setPackageName(packages);
         String packagePath = StringUtils.join(packages.split("\\."), File.separator);
-        this.setFilePath(outDir + File.separator + packagePath + File.separator + "mysql" +
+        this.setFilePath(outDir + File.separator + packagePath + File.separator + "xml" +
                 File.separator + this.fileName);
         this.fieldList = buildFieldList(javaClass);
     }

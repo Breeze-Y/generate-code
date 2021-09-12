@@ -1,7 +1,9 @@
-package top.breezes.model;
+package top.breezes.model.pgsql;
 
 import com.google.common.base.CaseFormat;
 import com.thoughtworks.qdox.model.JavaClass;
+import org.apache.commons.lang3.StringUtils;
+import top.breezes.model.Field;
 
 import java.io.File;
 import java.util.List;
@@ -12,7 +14,7 @@ import java.util.stream.Collectors;
  * @date 2021/9/11 14:11
  * @description
  */
-public class MysqlScriptFile {
+public class PgsqlScriptFile {
 
     public static final String SQL = ".sql";
 
@@ -24,19 +26,23 @@ public class MysqlScriptFile {
 
     private String tableName;
 
-    public MysqlScriptFile(JavaClass javaClass, String outDir) {
+    private String tableComment;
+
+    public PgsqlScriptFile(JavaClass javaClass, String outDir) {
         this.setFileName(javaClass.getSimpleName() + SQL);
-        this.setFilePath(outDir + File.separator + "db" + File.separator + "mysql" +
+        this.setFilePath(outDir + File.separator + "db" + File.separator + "pgsql" +
                 File.separator + this.fileName);
         this.fieldList = buildFieldList(javaClass);
         this.tableName = CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, javaClass.getName());
+        this.tableComment = StringUtils.isBlank(javaClass.getComment()) ? StringUtils.EMPTY
+                : javaClass.getComment().replaceAll("\r\n|\r|\n", " ");
     }
 
     private List<Field> buildFieldList(JavaClass javaClass) {
         return javaClass.getFields()
                 .parallelStream()
                 .filter(field -> !"serialVersionUID".equals(field.getName()))
-                .map(field -> Field.create(field, MysqlMapperXmlFile.javaType2JdbcMap, MysqlMapperXmlFile.jdbcLengthMap))
+                .map(field -> Field.create(field, PgsqlMapperXmlFile.javaType2JdbcMap, PgsqlMapperXmlFile.jdbcLengthMap))
                 .collect(Collectors.toList());
     }
 
@@ -74,5 +80,13 @@ public class MysqlScriptFile {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getTableComment() {
+        return tableComment;
+    }
+
+    public void setTableComment(String tableComment) {
+        this.tableComment = tableComment;
     }
 }
