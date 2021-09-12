@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
  * @date 2021/9/1 21:15
  * @description mybatis+mysql的模板生成器
  */
-@Mojo(name = "mybatis-postgresql")
+@Mojo(name = "mybatis-pgsql")
 public class MyBatisPgSQLMojo extends AbstractMainMojo {
 
     /**
