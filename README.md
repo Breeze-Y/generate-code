@@ -68,7 +68,6 @@
                     </output>
                 </configuration>
             </plugin>
-        </plugins>
 ```
 
 - step2：
